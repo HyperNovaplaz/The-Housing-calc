@@ -1,0 +1,134 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+class FlatPriceCalculatorApp:
+    def __init__(self, master):
+        self.master = master
+        self.master.title("Flat Price Calculator")
+        self.master.geometry("500x500")  # Increased window size
+        self.center_window()  # Center the window on the screen
+        self.master.resizable(False, False)  # Disable resizing
+
+        self.style = ttk.Style()
+        self.style.theme_use("clam")
+
+        self.style.configure("TLabel", foreground="black", font=("Helvetica", 12))
+        self.style.configure("TEntry", fieldbackground="lightgray", font=("Helvetica", 12))
+        self.style.configure("Custom.TButton", background="#4CAF50", foreground="white", font=("Helvetica", 12, "bold"))
+
+        # Entry fields for flat details
+        self.label_area = ttk.Label(master, text="Area (in sq. ft.):")
+        self.label_area.grid(row=0, column=0, padx=10, pady=5, sticky="w")
+        self.entry_area = ttk.Entry(master, justify="center")
+        self.entry_area.grid(row=0, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_bedrooms = ttk.Label(master, text="Number of Bedrooms:")
+        self.label_bedrooms.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        self.entry_bedrooms = ttk.Entry(master, justify="center")
+        self.entry_bedrooms.grid(row=1, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_bathrooms = ttk.Label(master, text="Number of Bathrooms:")
+        self.label_bathrooms.grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        self.entry_bathrooms = ttk.Entry(master, justify="center")
+        self.entry_bathrooms.grid(row=2, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_condition = ttk.Label(master, text="Condition (1-10):")
+        self.label_condition.grid(row=3, column=0, padx=10, pady=5, sticky="w")
+        self.entry_condition = ttk.Entry(master, justify="center")
+        self.entry_condition.grid(row=3, column=1, padx=10, pady=5, sticky="ew")
+
+        # Entry fields for sale price parameters
+        self.label_sale_price = ttk.Label(master, text="Sale Price Parameters:", font=("Helvetica", 14, "bold"))
+        self.label_sale_price.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
+
+        self.label_price_sqft = ttk.Label(master, text="Price per sq. ft.:")
+        self.label_price_sqft.grid(row=5, column=0, padx=10, pady=5, sticky="w")
+        self.entry_price_sqft = ttk.Entry(master, justify="center")
+        self.entry_price_sqft.grid(row=5, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_price_bedroom = ttk.Label(master, text="Price per bedroom:")
+        self.label_price_bedroom.grid(row=6, column=0, padx=10, pady=5, sticky="w")
+        self.entry_price_bedroom = ttk.Entry(master, justify="center")
+        self.entry_price_bedroom.grid(row=6, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_price_bathroom = ttk.Label(master, text="Price per bathroom:")
+        self.label_price_bathroom.grid(row=7, column=0, padx=10, pady=5, sticky="w")
+        self.entry_price_bathroom = ttk.Entry(master, justify="center")
+        self.entry_price_bathroom.grid(row=7, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_price_condition = ttk.Label(master, text="Price per condition point:")
+        self.label_price_condition.grid(row=8, column=0, padx=10, pady=5, sticky="w")
+        self.entry_price_condition = ttk.Entry(master, justify="center")
+        self.entry_price_condition.grid(row=8, column=1, padx=10, pady=5, sticky="ew")
+
+        # Entry fields for rent parameters
+        self.label_rent = ttk.Label(master, text="Rent Parameters:", font=("Helvetica", 14, "bold"))
+        self.label_rent.grid(row=9, column=0, columnspan=2, padx=10, pady=10)
+
+        self.label_rent_sqft = ttk.Label(master, text="Rent per sq. ft.:")
+        self.label_rent_sqft.grid(row=10, column=0, padx=10, pady=5, sticky="w")
+        self.entry_rent_sqft = ttk.Entry(master, justify="center")
+        self.entry_rent_sqft.grid(row=10, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_rent_bedroom = ttk.Label(master, text="Rent per bedroom:")
+        self.label_rent_bedroom.grid(row=11, column=0, padx=10, pady=5, sticky="w")
+        self.entry_rent_bedroom = ttk.Entry(master, justify="center")
+        self.entry_rent_bedroom.grid(row=11, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_rent_bathroom = ttk.Label(master, text="Rent per bathroom:")
+        self.label_rent_bathroom.grid(row=12, column=0, padx=10, pady=5, sticky="w")
+        self.entry_rent_bathroom = ttk.Entry(master, justify="center")
+        self.entry_rent_bathroom.grid(row=12, column=1, padx=10, pady=5, sticky="ew")
+
+        self.label_rent_condition = ttk.Label(master, text="Rent per condition point:")
+        self.label_rent_condition.grid(row=13, column=0, padx=10, pady=5, sticky="w")
+        self.entry_rent_condition = ttk.Entry(master, justify="center")
+        self.entry_rent_condition.grid(row=13, column=1, padx=10, pady=5, sticky="ew")
+
+        # Calculate button
+        self.btn_calculate = ttk.Button(master, text="Calculate Price", command=self.calculate_price, style="Custom.TButton")
+        self.btn_calculate.grid(row=14, column=0, columnspan=2, pady=20, sticky="ew")
+
+        # Progress label
+        self.progress_label = ttk.Label(master, text="")
+        self.progress_label.grid(row=15, column=0, columnspan=2, pady=10)
+
+    def center_window(self):
+        screen_width = self.master.winfo_screenwidth()
+        screen_height = self.master.winfo_screenheight()
+        window_width = self.master.winfo_reqwidth()
+        window_height = self.master.winfo_reqheight()
+        x = int((screen_width / 2) - (window_width / 2))
+        y = int((screen_height / 2) - (window_height / 2))
+        self.master.geometry(f"+{x}+{y}")
+
+    def calculate_price(self):
+        try:
+            area = float(self.entry_area.get())
+            bedrooms = int(self.entry_bedrooms.get())
+            bathrooms = int(self.entry_bathrooms.get())
+            condition = int(self.entry_condition.get())
+            price_sqft = float(self.entry_price_sqft.get())
+            price_bedroom = float(self.entry_price_bedroom.get())
+            price_bathroom = float(self.entry_price_bathroom.get())
+            price_condition = float(self.entry_price_condition.get())
+
+            rent_sqft = float(self.entry_rent_sqft.get())
+            rent_bedroom = float(self.entry_rent_bedroom.get())
+            rent_bathroom = float(self.entry_rent_bathroom.get())
+            rent_condition = float(self.entry_rent_condition.get())
+
+            total_sale_price = (area * price_sqft) + (bedrooms * price_bedroom) + (bathrooms * price_bathroom) + (condition * price_condition)
+            total_rent_price = (area * rent_sqft) + (bedrooms * rent_bedroom) + (bathrooms * rent_bathroom) + (condition * rent_condition)
+
+            self.progress_label.configure(text=f"The price for the flat is ${total_sale_price:,.2f}, and the rent is ${total_rent_price:,.2f}", foreground="green")
+        except ValueError:
+            self.progress_label.configure(text="Please enter valid numeric values.", foreground="red")
+
+def main():
+    root = tk.Tk()
+    app = FlatPriceCalculatorApp(root)
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()
